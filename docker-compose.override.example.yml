@@ -1,0 +1,12 @@
+# Docker Compose Override for Development
+# This file extends docker-compose.yml with development-specific settings
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.override.yml up
+
+services:
+  backend:
+    environment:
+      - NODE_ENV=development
+    # Uncomment to mount local source for live reload capabilities
+    # volumes:
+    #   - ./POS-BACKEND/src:/app/src
+    #   - ./POS-BACKEND/dist:/app/dist

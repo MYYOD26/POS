@@ -1,21 +1,25 @@
-# POS
+## วิธีติดตั้ง POS-BACKEND
 
-## โครงสร้างระบบ (Project Structure)
+1. เปิดเทอร์มินัล
+2. รันคำสั่ง:
 
+```bash
+cd POS/POS-BACKEND
+npm install
+npm run start:dev
 ```
-POS/
-├── POS-BACKEND/           # โค้ดฝั่ง Backend (API, Service, ฐานข้อมูล)
-│   └── src/
-│       ├── common/        # โค้ดที่ใช้ร่วมกัน
-│       ├── config/        # ไฟล์ตั้งค่าระบบ
-│       ├── database/      # โค้ดที่เกี่ยวกับฐานข้อมูล
-│       └── modules/       # โมดูลฟีเจอร์ต่าง ๆ
-├── POS-INFRASTRUCTURE/    # Orchestration & Infrastructure-as-code
-│   ├── nginx/             # Reverse proxy configurations
-│   ├── docker-compose.yml # Local orchestration environment
-│   ├── prometheus/        # Metrics collection configurations
-│   └── grafana/           # Visualization dashboards
-├── POS-MOBILE/            # โค้ดฝั่ง Mobile Application
-│   └── lib/               # โค้ดหลักของแอปมือถือ
-└── README.md              # ไฟล์อธิบายโปรเจกต์
+
+
+## วิธีรัน POS-BACKEND ด้วย Docker
+
+1. เปิดเทอร์มินัล
+2. รันคำสั่ง:
+
+```bash
+cd POS
+# รัน backend ด้วย docker-compose
+docker-compose up --build 
 ```
+
+- ไม่ต้องติดตั้ง Node.js หรือ npm ในเครื่อง
+- ไม่ต้อง npm install

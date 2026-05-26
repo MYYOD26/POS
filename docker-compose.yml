@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./POS-BACKEND
+      dockerfile: Dockerfile
+    container_name: pos-backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./POS-BACKEND/.env
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - pos-network
+
+  infra:
+    build:
+      context: ./POS-INFRASTRUCTURE
+      dockerfile: Dockerfile
+    container_name: pos-infra
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - pos-network
+
+  mobile:
+    build:
+      context: ./POS-MOBILE
+      dockerfile: Dockerfile
+    container_name: pos-mobile
+    # ports: ["8081:8081"] # ปรับตาม framework
+    restart: unless-stopped
+    networks:
+      - pos-network
+
+networks:
+  pos-network:
+    driver: bridge

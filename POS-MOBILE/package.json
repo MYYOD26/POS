@@ -1,0 +1,11 @@
+{
+  "name": "pos-mobile",
+  "version": "1.0.0",
+  "description": "POS Mobile placeholder",
+  "main": "index.js",
+  "scripts": {
+    "start": "echo 'No mobile framework specified' && exit 0"
+  },
+  "author": "",
+  "license": "ISC"
+}
