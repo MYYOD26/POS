@@ -5,6 +5,7 @@ import 'package:pos_mobile/core/theme/app_colors.dart';
 import 'package:pos_mobile/features/auth/presentation/providers/auth_provider.dart';
 import 'package:pos_mobile/features/dashboard/presentation/providers/dashboard_provider.dart';
 import 'package:pos_mobile/features/pos/presentation/pages/pos_page.dart';
+import 'package:pos_mobile/features/order/presentation/pages/transactions_page.dart';
 
 class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
@@ -42,7 +43,7 @@ class DashboardPage extends ConsumerWidget {
     // เนื้อหาที่จะแสดงตาม Index
     final views = [
       const PosPage(),
-      const _DummyBody(title: 'Financial Transactions', icon: Icons.receipt_long),
+      const TransactionsPage(),
       const _DummyBody(title: 'Inventory Management', icon: Icons.inventory_2),
       const _DummyBody(title: 'System Settings', icon: Icons.settings),
     ];

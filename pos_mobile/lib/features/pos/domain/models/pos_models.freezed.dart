@@ -256,10 +256,17 @@ abstract class _Product implements Product {
       throw _privateConstructorUsedError;
 }
 
+CartItem _$CartItemFromJson(Map<String, dynamic> json) {
+  return _CartItem.fromJson(json);
+}
+
 /// @nodoc
 mixin _$CartItem {
   Product get product => throw _privateConstructorUsedError;
   int get quantity => throw _privateConstructorUsedError;
+
+  /// Serializes this CartItem to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of CartItem
   /// with the given fields replaced by the non-null parameter values.
@@ -364,9 +371,12 @@ class __$$CartItemImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-
+@JsonSerializable()
 class _$CartItemImpl extends _CartItem {
   const _$CartItemImpl({required this.product, this.quantity = 1}) : super._();
+
+  factory _$CartItemImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CartItemImplFromJson(json);
 
   @override
   final Product product;
@@ -389,6 +399,7 @@ class _$CartItemImpl extends _CartItem {
                 other.quantity == quantity));
   }
 
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, product, quantity);
 
@@ -399,6 +410,11 @@ class _$CartItemImpl extends _CartItem {
   @pragma('vm:prefer-inline')
   _$$CartItemImplCopyWith<_$CartItemImpl> get copyWith =>
       __$$CartItemImplCopyWithImpl<_$CartItemImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CartItemImplToJson(this);
+  }
 }
 
 abstract class _CartItem extends CartItem {
@@ -407,6 +423,9 @@ abstract class _CartItem extends CartItem {
     final int quantity,
   }) = _$CartItemImpl;
   const _CartItem._() : super._();
+
+  factory _CartItem.fromJson(Map<String, dynamic> json) =
+      _$CartItemImpl.fromJson;
 
   @override
   Product get product;

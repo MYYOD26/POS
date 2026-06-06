@@ -25,6 +25,9 @@ class CartItem with _$CartItem {
 
   const CartItem._(); // อนุญาตให้เพิ่ม Custom Methods ลงใน Freezed
 
+  // 🔥 เพิ่มบรรทัดนี้เข้ามา เพื่อให้มันแปลงเป็น JSON ไปบันทึกในหน้า Order ได้ครับ
+  factory CartItem.fromJson(Map<String, dynamic> json) => _$CartItemFromJson(json);
+
   // Method ช่วยคำนวณราคารวมของสินค้ารายการนี้
   double get totalPrice => product.price * quantity;
 }

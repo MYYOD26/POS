@@ -5,6 +5,7 @@ import 'package:pos_mobile/core/theme/app_colors.dart';
 import 'package:pos_mobile/features/pos/domain/models/pos_models.dart';
 import 'package:pos_mobile/features/pos/presentation/providers/cart_provider.dart';
 import 'package:pos_mobile/features/pos/presentation/providers/product_provider.dart';
+import 'package:pos_mobile/features/order/presentation/widgets/checkout_dialog.dart';
 
 class PosPage extends ConsumerWidget {
   const PosPage({super.key});
@@ -29,7 +30,7 @@ class PosPage extends ConsumerWidget {
                 flex: 7,
                 child: _buildProductGrid(context, ref, colors, isDesktop),
               ),
-              
+
               // ฝั่งขวา: แผงตะกร้าสินค้า (แสดงเฉพาะบน Desktop ตามเดิม)
               if (isDesktop) ...[
                 const VerticalDivider(width: 1, thickness: 1),
@@ -37,19 +38,25 @@ class PosPage extends ConsumerWidget {
                   flex: 3,
                   child: _buildCartPanel(context, ref, colors, isModal: false),
                 ),
-              ]
+              ],
             ],
           ),
-          
+
           // 🔥 MOBILE UX: ปุ่มตะกร้าลอยตัว แสดงเฉพาะบนมือถือเมื่อมีสินค้าในตะกร้า
           floatingActionButton: !isDesktop && cartItems.isNotEmpty
               ? FloatingActionButton.extended(
                   onPressed: () => _showMobileCart(context, ref, colors),
                   backgroundColor: colors.primary,
-                  icon: const Icon(Icons.shopping_cart_checkout, color: Colors.white),
+                  icon: const Icon(
+                    Icons.shopping_cart_checkout,
+                    color: Colors.white,
+                  ),
                   label: Text(
                     'View Order (${cartItems.fold(0, (sum, item) => sum + item.quantity)})',
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 )
               : null,
@@ -72,7 +79,9 @@ class PosPage extends ConsumerWidget {
           return Container(
             decoration: BoxDecoration(
               color: colors.surface,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
+              ),
             ),
             child: Column(
               children: [
@@ -81,9 +90,12 @@ class PosPage extends ConsumerWidget {
                 Container(
                   width: 40,
                   height: 4,
-                  decoration: BoxDecoration(color: colors.divider, borderRadius: BorderRadius.circular(2)),
+                  decoration: BoxDecoration(
+                    color: colors.divider,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-                
+
                 // เรียกใช้ Cart Panel ตัวเดิม (Reusable Widget Pattern)
                 Expanded(
                   child: _buildCartPanel(context, ref, colors, isModal: true),
@@ -97,7 +109,12 @@ class PosPage extends ConsumerWidget {
   }
 
   // Grid รายการสินค้า
-  Widget _buildProductGrid(BuildContext context, WidgetRef ref, AppColors colors, bool isDesktop) {
+  Widget _buildProductGrid(
+    BuildContext context,
+    WidgetRef ref,
+    AppColors colors,
+    bool isDesktop,
+  ) {
     final productsAsync = ref.watch(productsProvider);
 
     return Container(
@@ -116,14 +133,22 @@ class PosPage extends ConsumerWidget {
           const SizedBox(height: 16),
           Expanded(
             child: productsAsync.when(
-              loading: () => Center(child: CircularProgressIndicator(color: colors.primary)),
+              loading: () => Center(
+                child: CircularProgressIndicator(color: colors.primary),
+              ),
               error: (error, stack) => Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.wifi_off_rounded, color: colors.error, size: 64),
                     const SizedBox(height: 16),
-                    Text('Failed to load menu.', style: TextStyle(color: colors.textSecondary, fontSize: 18)),
+                    Text(
+                      'Failed to load menu.',
+                      style: TextStyle(
+                        color: colors.textSecondary,
+                        fontSize: 18,
+                      ),
+                    ),
                     const SizedBox(height: 24),
                     ElevatedButton.icon(
                       onPressed: () => ref.invalidate(productsProvider),
@@ -135,17 +160,23 @@ class PosPage extends ConsumerWidget {
               ),
               data: (products) {
                 if (products.isEmpty) {
-                  return Center(child: Text('No products available.', style: TextStyle(color: colors.textSecondary)));
+                  return Center(
+                    child: Text(
+                      'No products available.',
+                      style: TextStyle(color: colors.textSecondary),
+                    ),
+                  );
                 }
                 return GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: isDesktop ? 4 : 2, 
+                    crossAxisCount: isDesktop ? 4 : 2,
                     childAspectRatio: 0.85,
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
                   ),
                   itemCount: products.length,
-                  itemBuilder: (context, index) => _ProductCard(product: products[index]),
+                  itemBuilder: (context, index) =>
+                      _ProductCard(product: products[index]),
                 );
               },
             ),
@@ -156,7 +187,12 @@ class PosPage extends ConsumerWidget {
   }
 
   // แผงตะกร้าสินค้าแบบแชร์ลอจิกร่วมกัน (Desktop Panel / Mobile Modal)
-  Widget _buildCartPanel(BuildContext context, WidgetRef ref, AppColors colors, {required bool isModal}) {
+  Widget _buildCartPanel(
+    BuildContext context,
+    WidgetRef ref,
+    AppColors colors, {
+    required bool isModal,
+  }) {
     final cartItems = ref.watch(cartProvider);
     final total = ref.read(cartProvider.notifier).totalAmount;
 
@@ -182,7 +218,10 @@ class PosPage extends ConsumerWidget {
                     color: colors.error,
                     onPressed: () {
                       ref.read(cartProvider.notifier).clearCart();
-                      if (isModal) Navigator.pop(context); // ปิดหน้าต่างโมดอลบนมือถืออัตโนมัติเมื่อเคลียร์ตะกร้า
+                      if (isModal)
+                        Navigator.pop(
+                          context,
+                        ); // ปิดหน้าต่างโมดอลบนมือถืออัตโนมัติเมื่อเคลียร์ตะกร้า
                     },
                     tooltip: 'Clear Cart',
                   ),
@@ -197,9 +236,19 @@ class PosPage extends ConsumerWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.shopping_bag_outlined, size: 64, color: colors.divider),
+                        Icon(
+                          Icons.shopping_bag_outlined,
+                          size: 64,
+                          color: colors.divider,
+                        ),
                         const SizedBox(height: 16),
-                        Text('No items in cart', style: TextStyle(color: colors.textSecondary, fontSize: 16)),
+                        Text(
+                          'No items in cart',
+                          style: TextStyle(
+                            color: colors.textSecondary,
+                            fontSize: 16,
+                          ),
+                        ),
                       ],
                     ),
                   )
@@ -211,8 +260,13 @@ class PosPage extends ConsumerWidget {
                       final item = cartItems[index];
                       return ListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: Text(item.product.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                        subtitle: Text('฿${item.product.price.toStringAsFixed(2)}'),
+                        title: Text(
+                          item.product.name,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        subtitle: Text(
+                          '฿${item.product.price.toStringAsFixed(2)}',
+                        ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -220,21 +274,34 @@ class PosPage extends ConsumerWidget {
                               icon: const Icon(Icons.remove_circle_outline),
                               color: colors.textSecondary,
                               onPressed: () {
-                                ref.read(cartProvider.notifier).removeProduct(item.product);
+                                ref
+                                    .read(cartProvider.notifier)
+                                    .removeProduct(item.product);
                                 // ปรับ UX: ถ้าชิ้นสุดท้ายถูกลบจนตะกร้าว่าง ให้ปิด Bottom Sheet บนมือถือทันที
-                                if (isModal && cartItems.length == 1 && item.quantity == 1) {
+                                if (isModal &&
+                                    cartItems.length == 1 &&
+                                    item.quantity == 1) {
                                   Navigator.pop(context);
                                 }
                               },
                             ),
                             SizedBox(
                               width: 32,
-                              child: Text('${item.quantity}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                              child: Text(
+                                '${item.quantity}',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
                             ),
                             IconButton(
                               icon: const Icon(Icons.add_circle_outline),
                               color: colors.primary,
-                              onPressed: () => ref.read(cartProvider.notifier).addProduct(item.product),
+                              onPressed: () => ref
+                                  .read(cartProvider.notifier)
+                                  .addProduct(item.product),
                             ),
                           ],
                         ),
@@ -249,7 +316,11 @@ class PosPage extends ConsumerWidget {
             decoration: BoxDecoration(
               color: colors.surface,
               boxShadow: [
-                BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -5)),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -5),
+                ),
               ],
             ),
             child: Column(
@@ -258,8 +329,21 @@ class PosPage extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Total', style: TextStyle(fontSize: 18, color: colors.textSecondary)),
-                    Text('฿${total.toStringAsFixed(2)}', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: colors.primary)),
+                    Text(
+                      'Total',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: colors.textSecondary,
+                      ),
+                    ),
+                    Text(
+                      '฿${total.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: colors.primary,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 24),
@@ -267,25 +351,35 @@ class PosPage extends ConsumerWidget {
                   onPressed: cartItems.isEmpty
                       ? null
                       : () {
-                          if (isModal) Navigator.pop(context); // ล้างโมดอลก่อนสลับไปหน้าจ่ายเงิน
-                          ScaffoldMessenger.of(context)
-                            ..hideCurrentSnackBar()
-                            ..showSnackBar(
-                              SnackBar(
-                                content: const Text('Processing Payment... ✅'),
-                                backgroundColor: colors.success,
-                                behavior: SnackBarBehavior.floating,
-                              ),
-                            );
+                          // 1. ถ้ากดเปิดมาจากมือถือ (Bottom Sheet) ให้ปิดแผงตะกร้าลงไปก่อน
+                          if (isModal) Navigator.pop(context);
+
+                          // 2. 🔥 เปลี่ยนจาก SnackBar มาเรียกโชว์หน้าต่าง CheckoutDialog แทน!
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false, // บังคับกดกากบาทเพื่อปิด
+                            builder: (context) => const CheckoutDialog(),
+                          );
                         },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     backgroundColor: colors.success,
-                    disabledBackgroundColor: colors.textSecondary.withValues(alpha: 0.3),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    disabledBackgroundColor: colors.textSecondary.withValues(
+                      alpha: 0.3,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: const Center(
-                    child: Text('Charge Order', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                    child: Text(
+                      'Charge Order',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -315,7 +409,11 @@ class _ProductCard extends ConsumerWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: colors.divider),
           boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 8, offset: const Offset(0, 4)),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
           ],
         ),
         child: Column(
@@ -325,9 +423,15 @@ class _ProductCard extends ConsumerWidget {
               child: Container(
                 decoration: BoxDecoration(
                   color: colors.primary.withValues(alpha: 0.05),
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(16),
+                  ),
                 ),
-                child: Icon(Icons.fastfood_outlined, size: 48, color: colors.primary.withValues(alpha: 0.5)),
+                child: Icon(
+                  Icons.fastfood_outlined,
+                  size: 48,
+                  color: colors.primary.withValues(alpha: 0.5),
+                ),
               ),
             ),
             Padding(
@@ -335,9 +439,24 @@ class _ProductCard extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Text(
+                    product.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: 4),
-                  Text('฿${product.price.toStringAsFixed(2)}', style: TextStyle(color: colors.primary, fontWeight: FontWeight.w600, fontSize: 14)),
+                  Text(
+                    '฿${product.price.toStringAsFixed(2)}',
+                    style: TextStyle(
+                      color: colors.primary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
                 ],
               ),
             ),
